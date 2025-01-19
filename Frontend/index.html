@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Assignment Evaluation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Landing Page -->
+        <div class="container" id="landing">
+            <div class="header">
+                <h1>Your Logo</h1>
+                <p>Description of the application goes here.</p>
+            </div>
+            <div class="buttons">
+                <button class="btn-primary" onclick="showRegister()">Sign Up</button>
+                <button class="btn-primary" onclick="showLogin()">Login</button>
+            </div>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="container form-container" id="register-form">
+            <div class="form-box">
+                <h2>Register</h2>
+                <input type="text" placeholder="Username" required />
+                <input type="email" placeholder="Email" required />
+                <input type="password" placeholder="Password" required />
+                <button class="btn-primary" onclick="loginSuccess()">Register</button>
+                <button class="btn-secondary">Continue with Google</button>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="container form-container" id="login-form">
+            <div class="form-box">
+                <h2>Login</h2>
+                <input type="text" placeholder="Username / Email" required />
+                <input type="password" placeholder="Password" required />
+                <button class="btn-primary" onclick="loginSuccess()">Login</button>
+                <button class="btn-secondary">Continue with Google</button>
+            </div>
+        </div>
+
+        <!-- Main Chat Interface -->
+        <div class="chat-container" id="chat">
+            <!-- History Section -->
+            <div class="history-toggle">
+                <button class="btn-icon" onclick="toggleHistory()">☰</button>
+            </div>
+            <div class="history" id="history">
+                <button class="btn-close" onclick="toggleHistory()">×</button>
+                <div class="history-content">
+                    <h2>History</h2>
+                    <div class="history-list">
+                        <p>No history available</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content" id="main-content">
+                <div class="feedback" id="feedback">
+                    <p>Feedback will appear here.</p>
+                </div>
+                <div class="input-section">
+                    <select id="assignment-type" onchange="showUploadOption()">
+                        <option value="" disabled selected>Select Assignment Type</option>
+                        <option value="code">Code</option>
+                        <option value="text">Text</option>
+                        <option value="math">Mathematical Expression</option>
+                    </select>
+                    <input type="file" id="file-upload" class="file-input" />
+                    <button class="btn-primary" onclick="uploadFile()" id="upload-button">Upload</button>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="profile-icon" onclick="toggleProfile()">
+                    <img src="https://via.placeholder.com/40" alt="Profile"/>
+                </div>
+                <div class="profile-slide" id="profile-slide">
+                    <button class="btn-close" onclick="toggleProfile()">×</button>
+                    <div class="profile-content">
+                        <h3>User Profile</h3>
+                        <div class="profile-info">
+                            <p>Username: John Doe</p>
+                            <p>Email: johndoe@example.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay for blur effect -->
+        <div class="overlay" id="overlay"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
