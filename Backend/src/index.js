@@ -1,21 +1,27 @@
-
-
-require('dotenv').config();
-
-// Import required libraries
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+const env = process.env.NODE_ENV || 'development';  // Add this line to define env
+const config = require('./config/config.js')[env];
+require('dotenv').config({ path: './src/.env' });
 
-// Initialize the app
+
+const { sequelize } = require('./models');
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
+const authRoutes = require('./routes/authRoutes');
+const assignmentRoutes = require('./Routes/assignmentRoutes.js');
+
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Middleware to parse incoming request bodies
+app.use(cors());
 app.use(bodyParser.json());
 
+app.use('/api/auth', authRoutes);
+app.use('/api/assignments', assignmentRoutes);
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(process.env.DB_PASS);
-    console.log(`Server is running on port ${PORT}`);
+sequelize.sync().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+  });
 });

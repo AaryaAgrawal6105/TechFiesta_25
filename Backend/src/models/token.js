@@ -1,7 +1,6 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Token extends Model {
     /**
@@ -10,16 +9,38 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      // Defining the relationship between Token and User
+      Token.belongsTo(models.User, {
+        foreignKey: 'user_id',
+        as: 'user', // Alias for the association
+      });
     }
   }
-  Token.init({
-    user_id: DataTypes.INTEGER,
-    token: DataTypes.STRING,
-    expires_at: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'Token',
-  });
+
+  Token.init(
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Users', // Ensure this matches the name of your users table
+          key: 'id',
+        },
+      },
+      token: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      expires_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+    },
+    {
+      sequelize,
+      modelName: 'Token',
+    }
+  );
+
   return Token;
 };
