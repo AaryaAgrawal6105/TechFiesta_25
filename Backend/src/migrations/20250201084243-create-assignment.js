@@ -1,3 +1,4 @@
+// Updated migration file
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -21,6 +22,10 @@ module.exports = {
       submitted_at: {
         type: Sequelize.DATE
       },
+      pdf_content: {
+        type: Sequelize.BLOB('long'), // This stores the entire PDF as binary data
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -31,7 +36,9 @@ module.exports = {
       }
     });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Assignments');
+    // Only remove the pdf_content column, not the whole table
+    await queryInterface.removeColumn('Assignments', 'pdf_content');
   }
 };

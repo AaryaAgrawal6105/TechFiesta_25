@@ -8,7 +8,7 @@ require('dotenv').config({ path: './src/.env' });
 
 const { sequelize } = require('./models');
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./Routes/authRoutes.js');
 const assignmentRoutes = require('./Routes/assignmentRoutes.js');
 
 const app = express();
