@@ -2,25 +2,39 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 
 const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    login(formData); // Mock registration
-    navigate('/dashboard');
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/auth/register', {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      const userData = response.data;
+      login(userData);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Registration failed:', err);
+      alert('Registration failed. Please try again.');
+    }
   };
 
   return (
@@ -33,11 +47,11 @@ const Register = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Full Name</label>
+            <label className="block text-sm font-medium mb-2">Username</label>
             <input
               type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               className="w-full p-3 rounded-lg bg-dark-lighter border border-dark focus:border-primary focus:outline-none"
               required
             />

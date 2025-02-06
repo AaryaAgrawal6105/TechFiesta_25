@@ -3,16 +3,30 @@ import { X, User, Settings, LogOut } from 'lucide-react';
 import { useUI } from '../contexts/UIContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Profile = () => {
   const { setIsProfileOpen } = useUI();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    setIsProfileOpen(false);
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      // Send logout request to backend
+      await axios.post('/api/auth/logout', {}, {
+        headers: {
+          Authorization: `Bearer ${user?.token}` // Assuming you store JWT token in user context
+        }
+      });
+
+      // Clear user context and navigate to home
+      logout();
+      setIsProfileOpen(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Optionally, display an error notification to the user
+    }
   };
 
   const menuItems = [

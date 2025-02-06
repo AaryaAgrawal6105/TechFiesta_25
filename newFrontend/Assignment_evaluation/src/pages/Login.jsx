@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,11 +11,29 @@ const Login = () => {
     email: '',
     password: '',
   });
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login({ ...formData, name: 'John Doe' }); // Mock login
-    navigate('/dashboard');
+    setError('');
+
+    try {
+      // Send login request to backend
+      const response = await axios.post('http://localhost:3000/api/auth/login', formData);
+
+
+      // Assuming the response contains user data and token
+      const userData = response.data;
+
+      // Update user context with backend response
+      login(userData);
+
+      // Navigate to dashboard on successful login
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Login failed:', err);
+      setError('Invalid email or password. Please try again.');
+    }
   };
 
   return (
@@ -46,6 +65,11 @@ const Login = () => {
               required
             />
           </div>
+
+          {error && (
+            <p className="text-red-500 text-center">{error}</p>
+          )}
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -55,6 +79,7 @@ const Login = () => {
             Sign In
           </motion.button>
         </form>
+
         <div className="mt-6 text-center">
           <p className="text-gray-400">
             Don't have an account?{' '}

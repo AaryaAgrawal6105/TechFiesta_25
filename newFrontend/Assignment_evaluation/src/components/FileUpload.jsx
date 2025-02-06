@@ -2,10 +2,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload } from 'lucide-react';
+import axios from 'axios'; // We will use axios for file upload
 
-const FileUpload = ({ onUpload }) => {
+const FileUpload = ({ userId, onUploadSuccess }) => {
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploading, setUploading] = useState(false); // Track upload status
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -19,6 +21,34 @@ const FileUpload = ({ onUpload }) => {
     
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  // Handle file upload to the backend
+  const handleUpload = async () => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('pdf', file);
+    formData.append('user_id', userId);
+    formData.append('title', 'Assignment Title'); // Replace with actual title
+    formData.append('content', 'Assignment Content'); // Replace with actual content
+    formData.append('submitted_at', new Date().toISOString()); // Use actual date
+
+    try {
+      setUploading(true);
+      // Make a POST request to upload the file
+      const response = await axios.post('http://localhost:3000/api/assignments/submit', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      
+      setUploading(false);
+      onUploadSuccess(response.data); // Update parent component with success response
+      alert('Assignment submitted successfully!');
+    } catch (error) {
+      setUploading(false);
+      console.error('Error during file upload', error);
+      alert('Failed to submit assignment');
     }
   };
 
@@ -61,9 +91,10 @@ const FileUpload = ({ onUpload }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="w-full bg-primary text-white p-2 rounded hover:bg-primary-dark transition-colors"
-          onClick={() => onUpload(file)}
+          onClick={handleUpload}
+          disabled={uploading}
         >
-          Upload
+          {uploading ? 'Uploading...' : 'Upload'}
         </motion.button>
       )}
     </motion.div>
@@ -71,5 +102,3 @@ const FileUpload = ({ onUpload }) => {
 };
 
 export default FileUpload;
-
-// Add similar component files for History.jsx and Profile.jsx following the same pattern
