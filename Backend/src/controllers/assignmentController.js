@@ -12,6 +12,7 @@ const submitAssignment = async (req, res) => {
       content,
       user_id,
       submitted_at,
+      pdfUrl,  // Ensure PDF URL is passed here
     };
 
     const assignment = await submitAssignmentService(assignmentData, pdfUrl);
