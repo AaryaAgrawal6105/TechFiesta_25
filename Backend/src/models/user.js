@@ -16,6 +16,11 @@ module.exports = (sequelize, DataTypes) => {
       // Define the association between User and Token
       User.hasMany(models.Token, { foreignKey: 'user_id' });
       models.Token.belongsTo(User, { foreignKey: 'user_id' });
+
+      User.hasMany(models.Feedback, {
+        foreignKey: 'user_id',
+        as: 'feedbacks',
+      });
     }
   }
 

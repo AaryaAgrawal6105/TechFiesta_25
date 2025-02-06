@@ -5,6 +5,15 @@ module.exports = (sequelize, DataTypes) => {
   class Assignment extends Model {
     static associate(models) {
       // Assignment.belongsTo(models.User, { foreignKey: 'user_id' });
+      Assignment.hasMany(models.Feedback, {
+        foreignKey: 'assignment_id',
+        as: 'feedbacks',
+      });
+
+      Assignment.belongsTo(models.User, {
+        foreignKey: 'user_id',
+        as: 'user',
+      });
     }
   }
 

@@ -1,27 +1,38 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Feedback extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      Feedback.belongsTo(models.Assignment, {
+        foreignKey: 'assignment_id',
+        as: 'assignment',
+      });
+
+      Feedback.belongsTo(models.User, {
+        foreignKey: 'user_id',
+        as: 'user',
+      });
     }
   }
-  Feedback.init({
-   // assignment_id: DataTypes.INTEGER,
-    rubric_id: DataTypes.INTEGER,
-    score: DataTypes.FLOAT,
-    comments: DataTypes.TEXT,
-    generated_at: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'Feedback',
-  });
+
+  Feedback.init(
+    {
+      assignment_id: DataTypes.INTEGER,
+      user_id: DataTypes.INTEGER, // Ensure this is defined
+      rubric_id: DataTypes.INTEGER,
+      score: DataTypes.FLOAT,
+      comments: DataTypes.TEXT,
+      generated_at: {
+        type: DataTypes.DATE,
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+    },
+    {
+      sequelize,
+      modelName: 'Feedback',
+    }
+  );
+
   return Feedback;
 };
