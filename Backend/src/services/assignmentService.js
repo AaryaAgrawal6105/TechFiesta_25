@@ -1,12 +1,11 @@
-const { Assignment } = require('../models');
+const Assignment = require('../models').Assignment;
 
-// Submit Assignment: Handle storing assignment data along with the PDF content
-exports.submitAssignment = async (data, pdfBuffer) => {
+// Submit Assignment: Store Cloudinary PDF URL instead of binary data
+exports.submitAssignment = async (data, pdfUrl) => {
   try {
-    // Create a new assignment and store PDF content if provided
     const assignment = await Assignment.create({
       ...data,
-      pdf_content: pdfBuffer, // Store the PDF content as binary data
+      pdf_url: pdfUrl, // Store Cloudinary URL
     });
     return assignment;
   } catch (error) {
