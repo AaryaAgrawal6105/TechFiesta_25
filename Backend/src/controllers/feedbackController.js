@@ -1,33 +1,40 @@
-// controllers/feedbackController.js
-const { getFeedbackFromGroqCloud } = require('../services/groqCloudServices');
-const { extractTextFromPdf } = require('../services/pdfService');
-const { generateFeedback } = require('../services/feedbackService');
+const { generateFeedback, retrieveFeedback } = require('../services/feedbackService');
+const { getFeedbackFromGroqCloud } = require('../utils/groqCloudService');
 
 const createFeedback = async (req, res) => {
-  const { assignment, rubric, user_id, assignment_id } = req.body; // Ensure user_id and assignment_id are provided
-  const { pdfUrl } = assignment; // Assuming assignment contains pdfUrl to fetch
+  const { assignment, rubric, user_id, assignment_id } = req.body;
+
+  if (!assignment || !rubric || !user_id || !assignment_id) {
+    return res.status(400).json({ error: 'Assignment, rubric, user_id, and assignment_id are required!' });
+  }
 
   try {
-    // Extract text from the PDF in JSON format
-    const pdfJsonData = await extractTextFromPdf(pdfUrl);
+    // Send assignment and rubric to GroqCloud to get feedback
+    const groqFeedback = await getFeedbackFromGroqCloud(assignment, rubric);
 
-    // Get feedback from Groq AI (including the extracted PDF data and rubric)
-    const feedbackData = await getFeedbackFromGroqCloud(pdfJsonData, rubric);
-    
-    // Generate feedback for storing in the database
-    const feedback = await generateFeedback({
-      assignment_id,
-      user_id,
-      rubric_id: rubric.id,  // Ensure rubric has an ID
-      score: feedbackData.score,
-      comments: feedbackData.comments,
-    });
-
-    res.status(201).json(feedback);
+    // You can now use the feedback from GroqCloud for further processing
+    if (groqFeedback) {
+      // Optionally, you can store this feedback in your database or use it in any other way.
+      const feedback = await generateFeedback(assignment, rubric, user_id, assignment_id, groqFeedback);
+      res.status(201).json(feedback);
+    } else {
+      res.status(500).json({ message: 'Failed to get feedback from GroqCloud' });
+    }
   } catch (error) {
-    console.error('Error creating feedback:', error);
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { createFeedback };
+const getAssignmentFeedback = async (req, res) => {
+  const { assignment_id } = req.params;
+  
+  try {
+    const feedback = await retrieveFeedback(assignment_id);
+    res.status(200).json(feedback);
+  } catch (error) {
+    console.error('Error retrieving feedback:', error);
+    res.status(500).json({ message: 'Failed to retrieve feedback' });
+  }
+};
+
+module.exports = { createFeedback, getAssignmentFeedback };
