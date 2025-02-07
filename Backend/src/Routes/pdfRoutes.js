@@ -1,25 +1,22 @@
-// routes/pdfRoutes.js
 const express = require('express');
 const router = express.Router();
-const pdfController = require('../controllers/pdfController');
 const multer = require('multer');
+const pdfController = require('../controllers/pdfController');
 
-// Set up multer for file upload in memory
+// Configure storage for multer
 const storage = multer.memoryStorage();
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
-        // Accept PDF and DOCX files
-        if (file.mimetype === 'application/pdf' || 
-            file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        if (file.mimetype === 'application/pdf') {
             cb(null, true);
         } else {
-            cb(new Error('Only PDF and DOCX files are allowed!'), false);
+            cb(new Error('Only PDF files are allowed!'), false);
         }
     }
 });
 
-// Route for converting PDF to text - notice 'forms' matches Postman field name
-router.post('/convert', upload.single('forms'), pdfController.convertPDFToText);
+// Route for converting PDF to text
+router.post('/convert', upload.single('file'), pdfController.convertPDFToText);
 
 module.exports = router;
