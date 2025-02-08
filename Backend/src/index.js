@@ -5,7 +5,6 @@ const env = process.env.NODE_ENV || 'development';  // Add this line to define e
 const config = require('./config/config.js')[env];
 require('dotenv').config({ path: './src/.env' });
 
-
 const { sequelize } = require('./models');
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 const authRoutes = require('./Routes/authRoutes.js');
@@ -20,10 +19,18 @@ app.use(bodyParser.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/assignments', assignmentRoutes);
-app.use('/api/feedback',feedbackroutes);
+app.use('/api/feedback', feedbackroutes);
 app.use('/api/pdf', pdfRoutes);
-sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-  });
-});
+
+const startServer = async () => {
+  try {
+    // await sequelize.sync(); // Commented out to prevent syncing every time
+    app.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Error starting server:', error);
+  }
+};
+
+startServer();
